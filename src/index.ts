@@ -8,10 +8,8 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import process from 'node:process';
 
 // Constants
-const DEFAULT_OUTPUT_FILE_NAME = 'tokenized_project.txt';
 const MAX_FILE_SIZE_BYTES = 1024 * 1024; // 1MB
 const COMMON_IGNORED_DIRECTORIES = [
   'node_modules',
@@ -357,7 +355,7 @@ async function processDirectory(
  * @param {string} outputPath - The file path where the combined content will be written
  * @returns {Promise<void>} A promise that resolves when the parsing is complete
  */
-async function parseProject(
+export async function parseProject(
   projectPath: string,
   outputPath: string,
 ): Promise<void> {
@@ -393,22 +391,3 @@ async function parseProject(
 
   console.log(`Project successfully parsed and written to ${outputPath}`);
 }
-
-// Configuration
-/**
- * The path to the project directory to process.
- * Defaults to the current working directory if not provided as a command-line argument.
- */
-const projectPath = process.argv[2] || process.cwd();
-
-/**
- * The path where the output file will be written.
- * Defaults to "project_for_ai.txt" in the current working directory if not provided.
- */
-const outputPath =
-  process.argv[3] || path.join(process.cwd(), DEFAULT_OUTPUT_FILE_NAME);
-
-// Execute the script
-parseProject(projectPath, outputPath)
-  .then(() => console.log('Done!'))
-  .catch((error) => console.error('Error:', error));
