@@ -1,7 +1,20 @@
+/**
+ * AI Repository Tokenizer
+ *
+ * This utility processes a source code repository and converts it into a single text file
+ * that can be used for AI context windows. It respects .gitignore rules and skips binary
+ * files, large files, and common directories that should be excluded.
+ */
 import path from 'node:path';
 import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
 
-// Simple gitignore parser implementation
+/**
+ * Parses a .gitignore file content and returns an object with an accepts function
+ * that can determine if a file path should be included or excluded.
+ *
+ * @param {string} content - The content of a .gitignore file
+ * @returns {Object} An object with an accepts method to check if a file path should be included
+ */
 function parseGitignore(content: string): {
   accepts: (filePath: string) => boolean;
 } {
@@ -18,6 +31,7 @@ function parseGitignore(content: string): {
 
     rules.push({
       pattern: pattern
+        // Convert gitignore patterns to regular expression patterns
         .replace(/\*\*/g, '___GLOBSTAR___')
         .replace(/\*/g, '[^/]*')
         .replace(/\?/g, '[^/]')
@@ -29,6 +43,12 @@ function parseGitignore(content: string): {
   }
 
   return {
+    /**
+     * Determines whether a file path should be included based on gitignore rules.
+     *
+     * @param {string} filePath - The path of the file to check
+     * @returns {boolean} True if the file should be included, false if it should be ignored
+     */
     accepts: (filePath: string): boolean => {
       // Normalize path for matching
       const normalizedPath = filePath.replace(/\\/g, '/');
@@ -50,6 +70,14 @@ function parseGitignore(content: string): {
   };
 }
 
+/**
+ * Main function that parses a project directory, processes all files according to rules,
+ * and writes the combined content to an output file.
+ *
+ * @param {string} projectPath - The root path of the project to process
+ * @param {string} outputPath - The file path where the combined content will be written
+ * @returns {Promise<void>} A promise that resolves when the parsing is complete
+ */
 async function parseProject(
   projectPath: string,
   outputPath: string,
@@ -91,6 +119,16 @@ async function parseProject(
   console.log(`Project successfully parsed and written to ${outputPath}`);
 }
 
+/**
+ * Recursively processes a directory and all its subdirectories, applying gitignore rules
+ * and callback function to each file.
+ *
+ * @param {string} basePath - The base path of the project
+ * @param {string} currentPath - The current directory being processed
+ * @param {Object} gitignoreParser - An object with an accepts method to determine if a file should be included
+ * @param {Function} fileCallback - A callback function to process each file's content
+ * @returns {Promise<void>} A promise that resolves when all files in the directory have been processed
+ */
 async function processDirectory(
   basePath: string,
   currentPath: string,
@@ -152,6 +190,12 @@ async function processDirectory(
   }
 }
 
+/**
+ * Determines if a file is a binary file based on its extension.
+ *
+ * @param {string} filePath - The path of the file to check
+ * @returns {boolean} True if the file is likely a binary file, false otherwise
+ */
 function isBinaryPath(filePath: string): boolean {
   const extension = path.extname(filePath).toLowerCase();
 
@@ -195,13 +239,28 @@ function isBinaryPath(filePath: string): boolean {
   return binaryExtensions.includes(extension);
 }
 
+/**
+ * Creates a formatted header string for a file to be included in the output.
+ *
+ * @param {string} filePath - The relative path of the file
+ * @returns {string} A formatted header string with separators and file path
+ */
 function createFileHeader(filePath: string): string {
   const separator = '='.repeat(80);
   return `${separator}\n// FILE: ${filePath}\n${separator}`;
 }
 
 // Configuration
+/**
+ * The path to the project directory to process.
+ * Defaults to the current working directory if not provided as a command-line argument.
+ */
 const projectPath = process.argv[2] || process.cwd();
+
+/**
+ * The path where the output file will be written.
+ * Defaults to "project_for_ai.txt" in the current working directory if not provided.
+ */
 const outputPath =
   process.argv[3] || path.join(process.cwd(), 'project_for_ai.txt');
 
