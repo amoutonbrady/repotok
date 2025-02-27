@@ -5,9 +5,10 @@
  * that can be used for AI context windows. It respects .gitignore rules and skips binary
  * files, large files, and common directories that should be excluded.
  */
+
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
-import fs from 'node:fs/promises';
 
 // Constants
 const DEFAULT_OUTPUT_FILE_NAME = 'tokenized_project.txt';
@@ -19,6 +20,19 @@ const COMMON_IGNORED_DIRECTORIES = [
   '.vscode',
   'dist',
   'build',
+];
+const COMMON_IGNORED_FILES = [
+  'package-lock.json',
+  'yarn.lock',
+  'pnpm-lock.yaml',
+  'bun.lockb',
+  '.DS_Store',
+  'Thumbs.db',
+  '.env',
+  '.env.local',
+  '.env.development.local',
+  '.env.test.local',
+  '.env.production.local',
 ];
 const BINARY_EXTENSIONS = [
   '.jpg',
@@ -213,6 +227,16 @@ function isCommonIgnoredDirectory(directoryName: string): boolean {
 }
 
 /**
+ * Checks if a file is in the common ignored files list
+ *
+ * @param {string} filename - The name of the file to check
+ * @returns {boolean} True if the file should be skipped
+ */
+function isCommonIgnoredFile(filename: string): boolean {
+  return COMMON_IGNORED_FILES.includes(filename);
+}
+
+/**
  * Checks if a file is too large to process
  *
  * @param {number} fileSize - The size of the file in bytes
@@ -239,10 +263,12 @@ async function processFile(
 ): Promise<void> {
   try {
     const fileStats = await fs.stat(filePath);
+    const filename = path.basename(filePath);
 
     const isOutputFile = filePath === path.resolve(outputPath);
     const isBinary = isBinaryFile(filePath);
     const isTooLarge = isFileTooLarge(fileStats.size);
+    const isIgnoredFile = isCommonIgnoredFile(filename);
 
     if (isOutputFile) {
       return; // Skip the output file itself
@@ -250,6 +276,11 @@ async function processFile(
 
     if (isBinary || isTooLarge) {
       console.log(`Skipping binary or large file: ${relativePath}`);
+      return;
+    }
+
+    if (isIgnoredFile) {
+      console.log(`Skipping common ignored file: ${relativePath}`);
       return;
     }
 
