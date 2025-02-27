@@ -47,6 +47,12 @@ npx repotok /path/to/your/project /path/to/output/file.txt
 - **Project Path:** Current working directory if not specified
 - **Output Path:** `./tokenized_project.txt` if not specified
 
+## Demo
+
+Watch repotok in action:
+
+![Demo Video](.github/demo.mp4)
+
 ## How It Works
 
 1. Loads and parses `.gitignore` rules (if available)
@@ -68,9 +74,18 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 This project was created (almost) entirely with AI assistance, and we welcome contributions similarly created or enhanced by AI tools. We believe that AI-human collaboration represents the future of software development.
 
 When contributing:
+
 - Be transparent about AI-generated content
 - Review and verify AI-generated code before submission
 - Focus on delivering value, regardless of whether the code was written by human, AI, or collaboration
+
+## Credits
+
+This project was inspired by:
+
+- [This tweet](https://x.com/WorldHallOfFun/status/1894448442837205273) by World Hall of Fun
+- [GitIngest](https://gitingest.com/) ([GitHub](https://github.com/cyclotruc/gitingest))
+  A service in Python that provides the similar functionalities
 
 ## License
 
