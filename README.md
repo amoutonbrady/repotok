@@ -51,7 +51,7 @@ npx repotok /path/to/your/project /path/to/output/file.txt
 
 Watch repotok in action:
 
-![Demo Video](.github/demo.mp4)
+https://github.com/user-attachments/assets/9ca90c4a-152c-4bd1-9670-e96f0c7912f4
 
 ## How It Works
 
